@@ -131,6 +131,12 @@ h2.section-title{font-size:clamp(2.1rem,5.5vw,3.8rem);font-weight:700;margin-bot
 .tags{display:flex;flex-wrap:wrap;gap:8px;transform:translateZ(24px)}
 .tags i{font-style:normal;font-size:.85rem;padding:4px 13px;border-radius:99px;border:1px solid var(--line);color:var(--ink);background:rgba(139,92,255,.14)}
 
+/* Tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab-btn{font:600 .95rem Sora;padding:9px 18px;border-radius:99px;border:1.5px solid var(--line);background:var(--glass);color:var(--soft);cursor:pointer;transition:all .2s}
+.tab-btn.active{border-color:var(--cy);color:#fff;background:linear-gradient(100deg,rgba(77,225,255,.18),rgba(139,92,255,.18))}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
 /* Stack */
 .skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .sk{padding:26px}
@@ -203,10 +209,34 @@ footer{text-align:center;padding:40px 0 50px;color:var(--soft);font-size:.9rem}
     </p>
   </section>
 
-  <!-- Selected work -->
+  <!-- Selected work (tabs) -->
   <section id="work">
     <h2 class="section-title rv">Selected work</h2>
-    <div class="grid" id="projects"></div>
+    <div class="rv">
+      <div class="tabs" id="work-tabs">
+        <button class="tab-btn active" data-tab="flagship">Flagship Android apps</button>
+        <button class="tab-btn" data-tab="islamic-edu">Islamic & educational</button>
+        <button class="tab-btn" data-tab="language">Language learning</button>
+        <button class="tab-btn" data-tab="desktop-game">Desktop & games</button>
+        <button class="tab-btn" data-tab="web-fullstack">Web & full-stack</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-flagship">
+        <div class="grid" id="projects-flagship"></div>
+      </div>
+      <div class="tab-panel" id="panel-islamic-edu">
+        <div class="grid" id="projects-islamic-edu"></div>
+      </div>
+      <div class="tab-panel" id="panel-language">
+        <div class="grid" id="projects-language"></div>
+      </div>
+      <div class="tab-panel" id="panel-desktop-game">
+        <div class="grid" id="projects-desktop-game"></div>
+      </div>
+      <div class="tab-panel" id="panel-web-fullstack">
+        <div class="grid" id="projects-web-fullstack"></div>
+      </div>
+    </div>
   </section>
 
   <!-- Currently working on -->
@@ -256,22 +286,37 @@ footer{text-align:center;padding:40px 0 50px;color:var(--soft);font-size:.9rem}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ---------- Projects: Selected work ---------- */
-var P=[
- {t:"Rosary - Tasbeh",d:"Digital tasbih counter with stats, themes and animations; 10 built-in dhikrs, offline-first. 400K+ downloads, 4.8★ rating.",g:["Android","Java","Offline"],u:"https://play.google.com/store/apps/details?id=uz.dawo.sanoq_tasbeh"},
- {t:"QarzDaftar — Debt Tracker",d:"Secure shared debt tracking with multi-currency, receipts, PDF/Excel export, Google Drive backup and 20+ languages.",g:["Android","Kotlin","MVVM","Room"],u:"https://play.google.com/store/apps/details?id=uz.devior.qarzdaftar"},
- {t:"MAP - Muslim Audio Player",d:"Islamic audio player with local library management, Quran radio stations, advanced EQ, visualizers and Android Auto/Chromecast.",g:["Android","Kotlin","Jetpack Compose","Media3"],u:"https://play.google.com/store/apps/details?id=uz.devior.playnidaa"},
- {t:"MediCalculator",d:"166+ evidence-based medical calculators across 17 specialties; offline, color-coded clinical interpretations, 21 languages.",g:["Android","Java","Medical"],u:"https://play.google.com/store/apps/details?id=uz.devior.medicalculator"},
- {t:"MoreThanScan: Doc Scanner",d:"Document scanner with OCR (Latin/CJK/Devanagari), QR/barcode scan/generate, PDF editor and cloud backup; all processing on-device.",g:["Android","Java","OCR"],u:"https://play.google.com/store/apps/details?id=uz.devior.morethanscan"},
- {t:"Namoz 3D (Android)",d:"Teaches how to perform namaz step-by-step with interactive checks and rewards for kids. 4.9★ rating.",g:["Android","Unity","3D"],u:"https://play.google.com/store/apps/details?id=uz.dawo.namoz.namoz3d"},
- {t:"Alifbo 3D (Android)",d:"Teaches the Arabic alphabet using multiple visual forms, audio pronunciation and tests for children.",g:["Android","Game","Education"],u:"https://play.google.com/store/apps/details?id=uz.dawo.alifbo3d"},
- {t:"Words (Сўзлар / كلمات)",d:"Vocabulary memorization app for Arabic, English and Korean with 15K+ words across many books.",g:["Android","Education","Language"],u:"https://play.google.com/store/apps/details?id=uz.dawo.testmaker"},
- {t:"IjaraBiznes.uz",d:"Rental/business platform built with Vue.js stack for local market needs.",g:["Web","Vue 3","Vuetify","Startup"],u:"http://ijarabiznes.uz"},
- {t:"alimentlar.uz / tezzkor.uz",d:"Two live websites with full admin panels: user management, content control and analytics dashboards.",g:["Web","Full-stack","Admin panel"],u:"https://alimentlar.uz"}
-];
+/* ---------- Projects: Selected work (grouped by tabs) ---------- */
+var PROJECTS={
+ flagship:[
+   {t:"Rosary - Tasbeh",d:"Digital tasbih counter with stats, themes and animations; 10 built-in dhikrs, offline-first. 400K+ downloads, 4.8★ rating.",g:["Android","Java","Offline"],u:"https://play.google.com/store/apps/details?id=uz.dawo.sanoq_tasbeh"},
+   {t:"QarzDaftar — Debt Tracker",d:"Secure shared debt tracking with multi-currency, receipts, PDF/Excel export, Google Drive backup and 20+ languages.",g:["Android","Kotlin","MVVM","Room"],u:"https://play.google.com/store/apps/details?id=uz.devior.qarzdaftar"},
+   {t:"MAP - Muslim Audio Player",d:"Islamic audio player with local library management, Quran radio stations, advanced EQ, visualizers and Android Auto/Chromecast.",g:["Android","Kotlin","Jetpack Compose","Media3"],u:"https://play.google.com/store/apps/details?id=uz.devior.playnidaa"},
+   {t:"MediCalculator",d:"166+ evidence-based medical calculators across 17 specialties; offline, color-coded clinical interpretations, 21 languages.",g:["Android","Java","Medical"],u:"https://play.google.com/store/apps/details?id=uz.devior.medicalculator"},
+   {t:"MoreThanScan: Doc Scanner",d:"Document scanner with OCR (Latin/CJK/Devanagari), QR/barcode scan/generate, PDF editor and cloud backup; all processing on-device.",g:["Android","Java","OCR"],u:"https://play.google.com/store/apps/details?id=uz.devior.morethanscan"}
+ ],
+ "islamic-edu":[
+   {t:"Mabdaul qiroat",d:"Interactive learning app for Mabdaul Qiroat 1–3 with audio lessons, word highlighting and translations.",g:["Android","Education","Islamic"],u:"https://play.google.com/store/apps/details?id=uz.devior.rtl"},
+   {t:"Namoz 3D (Android)",d:"Teaches how to perform namaz step-by-step with interactive checks and rewards for kids. 4.9★ rating.",g:["Android","Unity","3D"],u:"https://play.google.com/store/apps/details?id=uz.dawo.namoz.namoz3d"},
+   {t:"Alifbo 3D (Android)",d:"Teaches the Arabic alphabet using multiple visual forms, audio pronunciation and tests for children.",g:["Android","Game","Education"],u:"https://play.google.com/store/apps/details?id=uz.dawo.alifbo3d"},
+   {t:"Abul Hasan Nadvi kitoblari",d:"4 Islamic books with Uzbek translations, built-in dictionary (50k+ words), Arabic TTS and bookmarks.",g:["Android","Islamic","Education"],u:"https://play.google.com/store/apps/details?id=uz.devior.arabicbooks"}
+ ],
+ language:[
+   {t:"Words (Сўзлар / كلمات)",d:"Vocabulary memorization app for Arabic, English and Korean with 15K+ words across many books.",g:["Android","Education","Language"],u:"https://play.google.com/store/apps/details?id=uz.dawo.testmaker"}
+ ],
+ "desktop-game":[
+   {t:"Namoz 3D (Windows)",d:"Interactive 3D experience for learning how to perform namaz on PC with step-by-step guidance.",g:["Windows","Game","Unity"],u:"https://t.me/devior_portfolio/81"},
+   {t:"Alifbo 3D (Windows)",d:"3D educational game for learning the Arabic alphabet on PC; engaging visuals and interactive exercises.",g:["Windows","Game","Unity"],u:"https://t.me/devior_portfolio/82"},
+   {t:"Debt Book — Windows desktop app",d:"Offline debt tracking for desktop: debtor list, history, backups in JSON, photo support; built for merchants and individuals.",g:["Desktop","Offline"],u:"https://t.me/devior_portfolio/95"}
+ ],
+ "web-fullstack":[
+   {t:"IjaraBiznes.uz",d:"Rental/business platform built with Vue.js stack for local market needs.",g:["Web","Vue 3","Vuetify","Startup"],u:"http://ijarabiznes.uz"},
+   {t:"alimentlar.uz",d:"Live website with full admin panel: user management, content control and analytics dashboard.",g:["Web","Full-stack","Admin panel"],u:"https://alimentlar.uz"},
+   {t:"tezzkor.uz",d:"Fast information portal with a complete admin panel for content and user management.",g:["Web","Full-stack","Admin panel"],u:"https://tezzkor.uz"}
+ ]
+};
 
-var box=document.getElementById("projects");
-P.forEach(function(p){
+function createCard(p){
   var c=document.createElement("article");c.className="glass card rv";
   var linkHtml=p.u?'<a class="link" href="'+p.u+'" target="_blank" rel="noopener">Open →</a>':'';
   c.innerHTML="<h3>"+p.t+"</h3><p>"+p.d+"</p>"+linkHtml+"<div class='tags'>"+p.g.map(function(x){return"<i>"+x+"</i>"}).join("")+"</div>";
@@ -281,7 +326,23 @@ P.forEach(function(p){
     c.style.transform="rotateY("+((x-.5)*14)+"deg) rotateX("+((.5-y)*14)+"deg) translateZ(8px)";
   });
   c.addEventListener("pointerleave",function(){c.style.transform=""});
-  box.appendChild(c);
+  return c;
+}
+
+Object.keys(PROJECTS).forEach(function(key){
+  var container=document.getElementById("projects-"+key);
+  PROJECTS[key].forEach(function(p){container.appendChild(createCard(p))});
+});
+
+/* Tabs switching */
+var tabsContainer=document.getElementById("work-tabs");
+tabsContainer.addEventListener("click",function(e){
+  if(!e.target.classList.contains("tab-btn"))return;
+  var tab=e.target.dataset.tab;
+  document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active")});
+  document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active")});
+  e.target.classList.add("active");
+  document.getElementById("panel-"+tab).classList.add("active");
 });
 
 /* ---------- Projects: Currently working on ---------- */
