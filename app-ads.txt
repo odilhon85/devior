@@ -1,3 +1,1 @@
-# app-ads.txt for devior.uz
-# Add your AdMob / mediation entries here, e.g.:
-# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+google.com, pub-8291687445737231, DIRECT, f08c47fec0942fa0
